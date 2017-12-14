@@ -21,6 +21,16 @@ def getVarianceProfile(stack):
 	    var_prof[i] = np.var(stack[i,:,:])
 	return np.array(var_prof)
 
+def getIntensityProfile(stack):
+	"""Variance z profile of a stack. First dim is supposed to be depth."""
+	depth = stack.shape[0]
+	int_prof= np.zeros(depth)
+
+	for i in range(depth):
+	    int_prof[i] = np.mean(stack[i,:,:])
+	return np.array(int_prof)
+
+
 def plotProfiles(profiles, figure = None, axes=None, column=1):
 	"""Plot profiles (e.g. acquired with the function above)"""
 	numprof = profiles.shape[0]
@@ -35,6 +45,20 @@ def plotProfiles(profiles, figure = None, axes=None, column=1):
 		            # plt.subplot(length,j+1,i+1)
 		            # plt.title(str(i))
 		            ax[i,j].plot(profiles[j][i])
+
+	plt.tight_layout(h_pad=2)
+	plt.show()
+
+
+def plotProfile(profile, figure = None, axes=None, column=1):
+	"""Plot profiles (e.g. acquired with the function above)"""
+	length = profile.shape[0]
+
+	fig,ax = plt.subplots(nrows=length, ncols=1, figsize=(7,length*2))
+
+
+	for i in range(length):
+	            ax[i].plot(profile[i])
 
 	plt.tight_layout(h_pad=2)
 	plt.show()
@@ -58,4 +82,27 @@ def getDCTSProfile(stack):
 
 	for i in range(depth):
 	    dcts_prof[i] = DCTS(cropToLeftTop(dct2d(stack[i,:,:])))
+	return np.array(dcts_prof)
+
+def normalizeToOne(img):
+	return img/img.sum()
+
+
+
+def getDCTSProfileNormalized(stack):
+	depth = stack.shape[0]
+	dcts_prof= np.zeros(depth)
+
+	for i in range(depth):
+	    dcts_prof[i] = DCTS(normalizeToOne(cropToLeftTop(np.abs(dct2d(stack[i,:,:])))))
+	return np.array(dcts_prof)
+
+def getDCTSProfileNormalizedExperimental(stack):
+	depth = stack.shape[0]
+	dcts_prof= np.zeros(depth)
+
+	for i in range(depth):
+		interm = cropToLeftTop(np.abs(dct2d(stack[i,:,:])))
+		interm[0:20,0:20] = np.zeros((20,20)) + 0.00000001
+		dcts_prof[i] = DCTS(normalizeToOne(interm))
 	return np.array(dcts_prof)
