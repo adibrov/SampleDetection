@@ -1,4 +1,4 @@
-resources/img
+resources
 .ipynb_checkpoints
 python/__pycache__/
 *.tif
