@@ -43,7 +43,7 @@ def plotProfiles(profiles, figure = None, axes=None, column=1):
     
     for i in range(length):
                 # plt.subplot(length,j+1,i+1)
-                # plt.title(str(i))
+                ax[i,j].set_title(str(i))
                 ax[i,j].plot(profiles[j][i])
 
   plt.tight_layout(h_pad=2)
@@ -84,9 +84,32 @@ def getDCTSProfile(stack):
       dcts_prof[i] = DCTS(cropToLeftTop(dct2d(stack[i,:,:])))
   return np.array(dcts_prof)
 
+def getDCTSProfileNoZero(stack):
+  depth = stack.shape[0]
+  dcts_prof= np.zeros(depth)
+
+  for i in range(depth):
+      spectrum = dct2d(stack[i,:,:])
+      spectrum[0,0] = 0.00001
+      dcts_prof[i] = DCTS(cropToLeftTop(spectrum))
+      # dcts_prof[i] = 
+  return np.array(dcts_prof)
+
 def normalizeToOne(img):
   return img/img.sum()
 
+def getNetworkMeasure(slice, model):
+  inp_tens = slice[np.newaxis,...,np.newaxis]
+  return np.mean(model.predict(normalizeWithLimits(inp_tens)))
+
+def getNetworkProfile(stack, model):
+  depth = stack.shape[0]
+  net_prof = np.zeros(depth)
+  for i in range(depth):
+
+    
+    net_prof[i] = getNetworkMeasure(stack[i,:,:], model)
+  return net_prof
 
 
 def getDCTSProfileNormalized(stack):
@@ -106,3 +129,12 @@ def getDCTSProfileNormalizedExperimental(stack):
     interm[0:20,0:20] = np.zeros((20,20)) + 0.00000001
     dcts_prof[i] = DCTS(normalizeToOne(interm))
   return np.array(dcts_prof)
+
+def normalizeWithLimits(dataset, upLim=99.9, loLim=0.01):
+    upLim = np.percentile(dataset, 99.9)
+    loLim = np.percentile(dataset, 0.01)
+    res = np.maximum(dataset - loLim, 0)
+    res = np.minimum(res, upLim)
+    res = res/(upLim-loLim+0.0000001)
+    return res
+    
