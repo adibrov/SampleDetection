@@ -9,7 +9,7 @@ from gputools import OCLProgram,  OCLArray
 
 from numpy import *
 
-def gpu_variance(data, Nx=10,Ny=10, kernelPath="./gpu_variance.cl"):
+def gpu_variance(data, Nx=10,Ny=10, kernelPath="C:\\Users\\myersadmin\\soft\\SampleDetection\\resources\\kernels\\gpu_variance.cl"):
     """Function to convolve an imgage with the variance filter on GPU."""
     # create numpy arrays
 

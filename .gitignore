@@ -1,5 +1,6 @@
 resources
 .ipynb_checkpoints
-python/__pycache__/
+*__pycache__*
 *.tif
 *.png
+*.pyc
